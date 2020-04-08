@@ -19,6 +19,9 @@ uchar* bytes;
 bool steep = 0;
 uchar* mark;
 
+int cnt1, cnt2;
+int flasm = 0;
+
 struct Point {
     double x, y;
     Point(double a, double b) {
@@ -51,18 +54,17 @@ struct Line {
 
 Line ln[4];
 
-int inlin(Line l, Point p) {
+void inlin(Line l, Point p) {
     double tmp  = l.a * p.x + l.b * p.y + l.c;
-    if (tmp > 0) return 1;
-    else if (tmp < 0) return 0;
-    else return 10;
+    if (tmp >= 0) cnt1++;
+    if (tmp <= 0) cnt2++;
 }
 
 bool check(Point p) {
-    int ans = 0;
+    cnt1 = 0, cnt2 = 0;
     for (int i = 0; i < 4; i++)
-        ans += inlin(ln[i], p);
-    if (ans == 0 || ans == 4)
+        inlin(ln[i], p);
+    if (cnt1 == 4 || cnt2 == 4)
         return 1;
     return 0;
 }
@@ -140,17 +142,48 @@ void algo(double x0, double y0, double x, double y) {
 
     double xx = round(x0);
     int xs = int(xx);
-    double intery = y0;
+    double intery = y0 + grad * (xx - x0);
+    double xgap = 1;
+
+    if (thickness > 1.0)
+        xgap = rfpart(x0 + 0.5);
+
     xx = round(x);
     int xf = (int)xx;
 
-    for (int x = xs; x <= xf; x++) {
+    if (y0 == y) {
+        intery = y0;
+        if (flasm == 2)
+            xs++, xf--;
 
-        //cout << x << ' ' << intery << endl;
+        for (int x = xs; x <= xf; x++) {
+            draw(x, ipart(intery), 1 - fpart(intery));
+            draw(x, ipart(intery) + 1, fpart(intery));
+        }
+
+        flasm = min(flasm + 1, 2);
+        return;
+    }
+
+    draw(xs, ipart(intery), rfpart(intery) * xgap);
+    draw(xs, ipart(intery) + 1, fpart(intery) * xgap);
+
+    intery += grad;
+
+    double intr = y + grad * (xx - x);
+    xgap = 1;
+
+    if (thickness > 1.0)
+        xgap = 1 - rfpart(x + 0.5);
+
+    draw(xf, ipart(intr), rfpart(intr) * xgap);
+    draw(xf, ipart(intr) + 1, fpart(intr) * xgap);
+
+    for (int x = xs + 1; x <= xf - 1; x++) {
 
         draw(x, ipart(intery), 1 - fpart(intery));
         draw(x, ipart(intery) + 1, fpart(intery));
-        //draw(x, ipart(intery) - 1, fpart(intery));
+
         intery += grad;
     }
 }
@@ -237,10 +270,11 @@ int main(int argc, char *argv[]) {
         ln[2] = Line(p[2].x, p[2].y, p[0].x, p[0].y);
         ln[3] = Line(p[1].x, p[1].y, p[3].x, p[3].y);
 
-        algo(p[2].x, p[2].y, p[0].x, p[0].y);
-        algo(p[1].x, p[1].y, p[3].x, p[3].y);
-        algo(p[0].x, p[0].y, p[1].x, p[1].y);
         algo(p[2].x, p[2].y, p[3].x, p[3].y);
+        algo(p[0].x, p[0].y, p[1].x, p[1].y);
+
+        algo(p[1].x, p[1].y, p[3].x, p[3].y);
+        algo(p[2].x, p[2].y, p[0].x, p[0].y);
 
         steep = 0;
         for (int i = 0; i < width; i++)
@@ -248,7 +282,8 @@ int main(int argc, char *argv[]) {
                 if (check(Point(i, j)))
                     draw(i, j, 1);
 
-        for (int i = 0; i < height; i++)
+
+        /*for (int i = 0; i < height; i++)
             for (int j = 0; j < width; j++) {
                 int cnt = 0;
                 if (valid(i * width + j + 1) && mark[i * width + j + 1] == 1) cnt++;
@@ -258,7 +293,7 @@ int main(int argc, char *argv[]) {
 
                 if (cnt == 4)
                     draw(j, i, 1);
-            }
+            }*/
 
     } else algo(x0, y0, x, y);
 
