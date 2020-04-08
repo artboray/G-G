@@ -105,7 +105,7 @@ int ipart(double x) {
 }
 
 double fpart(double x) {
-    return x - int(x);
+    return x - floor(x);
 }
 
 void algo(double x0, double y0, double x, double y) {
@@ -124,31 +124,31 @@ void algo(double x0, double y0, double x, double y) {
     double dy = y - y0;
 
     double grad;
-    if (dx == 0) grad = 1;
+    if (dx == 0.0) grad = 1;
     else grad = dy / dx;
 
     double xx = round(x0);
     double yy = y0 + grad * (xx - x0);
     double xgap = 1 - fpart(x0 + 0.5);
 
-    double xs = xx;
-    double ys = ipart(yy);
+    int xs = int(xx);
+    int ys = ipart(yy);
 
-    draw(xs, ys, (1 - fpart(yy)) * xgap);
-    draw(xs, ys + 1, fpart(yy) * xgap);
+    //draw(xs, ys, (1 - fpart(yy)) * xgap);
+    //draw(xs, ys + 1, fpart(yy) * xgap);
     double intery = yy + grad;
 
     xx = round(x);
     yy = y + grad * (xx - x);
     xgap = 1 - fpart(x + 0.5);
 
-    double xf = xx;
-    double yf = ipart(yy);
+    int xf = (int)xx;
+    int yf = ipart(yy);
 
-    draw(xf, yf, (1 - fpart(yy)) * xgap);
-    draw(xf, yf + 1, fpart(yy) * xgap);
+    //draw(xf, yf, (1 - fpart(yy)) * xgap);
+    //draw(xf, yf + 1, fpart(yy) * xgap);
 
-    for (double x = xs + 1; x <= xf - 1; x++) {
+    for (int x = xs; x <= xf; x++) {
         draw(x, ipart(intery), 1 - fpart(intery));
         draw(x, ipart(intery) + 1, fpart(intery));
         intery += grad;
