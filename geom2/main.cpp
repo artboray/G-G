@@ -84,9 +84,11 @@ double from_sRGB(double u) {
 }
 
 void draw(int x, int y, double intensity) {
-    if ((x >= width) || (y >= height) || (x < 0) || (y < 0))
-        return;
     if (!steep) swap(x, y);
+
+    if ((x >= height) || (y >= width) || (x < 0) || (y < 0))
+        return;
+
     if (thickness < 1.0) intensity *= thickness;
 
     double tmp = 0.0;
@@ -113,9 +115,6 @@ double rfpart(double x) {
 }
 
 void algo(double x0, double y0, double x, double y) {
-
-    //x0 += 0.5, y0 += 0.5, x += 0.5, y += 0.5;
-
     steep = fabs(y - y0) > fabs(x - x0);
 
     if (steep) {
@@ -143,11 +142,6 @@ void algo(double x0, double y0, double x, double y) {
 
     draw(xs, ys, (1 - fpart(yy)) * xgap);
     draw(xs, ys + 1, fpart(yy) * xgap);
-
-    //cout << x0 << ' ' << y0 << ' ' << x << ' ' << y << endl;
-    //cout << fpart(x0 + 0.5) << ' ' << rfpart(x0 + 0.5) << endl;
-    //cout << xs << ' ' << ys << ' ' << xgap << endl;
-    //cout << yy << endl;
 
     double intery = yy + grad;
 
@@ -204,7 +198,7 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    bytes = new uchar[height * width];
+    bytes = new uchar[height * width + 10];
 
     for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++)
@@ -221,14 +215,14 @@ int main(int argc, char *argv[]) {
 
         Point p[4];
         double angle = atan2(y - y0, x - x0);
-        p[0].x = x0 + (thickness / 2) * cos(angle + M_PI / 2.0);
-        p[0].y = y0 + (thickness / 2) * sin(angle + M_PI / 2.0);
-        p[1].x = x0 + (thickness / 2) * cos(angle - M_PI / 2.0);
-        p[1].y = y0 + (thickness / 2) * sin(angle - M_PI / 2.0);
-        p[2].x = x + (thickness / 2) * cos(angle - M_PI / 2.0);
-        p[2].y = y + (thickness / 2) * sin(angle - M_PI / 2.0);
-        p[3].x = x + (thickness / 2) * cos(angle + M_PI / 2.0);
-        p[3].y = y + (thickness / 2) * sin(angle + M_PI / 2.0);
+        p[0].x = x0 + (thickness / 2.0) * cos(angle + M_PI / 2.0);
+        p[0].y = y0 + (thickness / 2.0) * sin(angle + M_PI / 2.0);
+        p[1].x = x0 + (thickness / 2.0) * cos(angle - M_PI / 2.0);
+        p[1].y = y0 + (thickness / 2.0) * sin(angle - M_PI / 2.0);
+        p[2].x = x + (thickness / 2.0) * cos(angle - M_PI / 2.0);
+        p[2].y = y + (thickness / 2.0) * sin(angle - M_PI / 2.0);
+        p[3].x = x + (thickness / 2.0) * cos(angle + M_PI / 2.0);
+        p[3].y = y + (thickness / 2.0) * sin(angle + M_PI / 2.0);
 
         sort(p, p + 4);
 
