@@ -1,0 +1,3 @@
+/Users/borat/CLionProjects/geom1/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/borat/CLionProjects/geom1/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/borat/CLionProjects/geom1/cmake-build-debug/CMakeFiles/geom1.dir
