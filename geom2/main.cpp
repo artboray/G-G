@@ -64,6 +64,7 @@ bool check(Point p) {
         ans += inlin(ln[i], p);
     if (ans == 0 || ans == 4)
         return 1;
+    return 0;
 }
 
 double from_gc(double u) {
