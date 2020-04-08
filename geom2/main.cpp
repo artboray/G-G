@@ -74,7 +74,7 @@ double to_gc(double u) {
 }
 
 double to_sRGB(double u) {
-    if (u / 255.0 <= 0.0031308) return u * 323.0 / 25.0;
+    if (u / 255.0 <= 0.0031308) return u * 12.92;
     else return 255.0 * (1.055 * pow((u / 255.0), 0.416) - 0.055);
 }
 
@@ -141,10 +141,10 @@ void algo(double x0, double y0, double x, double y) {
     int xs = int(xx);
     int ys = ipart(yy);
 
-    draw(xs, ys, (1 - fpart(yy)) * xgap);
-    draw(xs, ys + 1, fpart(yy) * xgap);
+    //draw(xs, ys, (1 - fpart(yy)) * xgap);
+    //draw(xs, ys + 1, fpart(yy) * xgap);
 
-    double intery = yy + grad;
+    double intery = y0;
 
     xx = round(x);
     yy = y + grad * (xx - x);
@@ -153,12 +153,13 @@ void algo(double x0, double y0, double x, double y) {
     int xf = (int)xx;
     int yf = ipart(yy);
 
-    draw(xf, yf, (1 - fpart(yy)) * xgap);
-    draw(xf, yf + 1, fpart(yy) * xgap);
+    //draw(xf, yf, (1 - fpart(yy)) * xgap);
+    //draw(xf, yf + 1, fpart(yy) * xgap);
 
-    for (int x = xs + 1; x <= xf - 1; x++) {
+    for (int x = xs; x <= xf; x++) {
         draw(x, ipart(intery), 1 - fpart(intery));
         draw(x, ipart(intery) + 1, fpart(intery));
+        //draw(x, ipart(intery) - 1, fpart(intery));
         intery += grad;
     }
 }
@@ -227,6 +228,11 @@ int main(int argc, char *argv[]) {
 
         sort(p, p + 4);
 
+        //cout << p[0].x << ' ' << p[0].y << endl;
+        //cout << p[1].x << ' ' << p[1].y << endl;
+        //cout << p[2].x << ' ' << p[2].y << endl;
+        //cout << p[3].x << ' ' << p[3].y << endl;
+
         ln[0] = Line(p[0].x, p[0].y, p[1].x, p[1].y);
         ln[1] = Line(p[3].x, p[3].y, p[2].x, p[2].y);
         ln[2] = Line(p[2].x, p[2].y, p[0].x, p[0].y);
@@ -238,8 +244,8 @@ int main(int argc, char *argv[]) {
         algo(p[3].x, p[3].y, p[2].x, p[2].y);
 
         steep = 0;
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++)
+        for (int i = 0; i < width; i++)
+            for (int j = 0; j < height; j++)
                 if (check(Point(i, j)))
                     draw(i, j, 1);
 
