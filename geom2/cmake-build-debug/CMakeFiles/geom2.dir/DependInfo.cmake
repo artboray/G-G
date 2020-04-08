@@ -4,7 +4,7 @@ set(CMAKE_DEPENDS_LANGUAGES
   )
 # The set of files for implicit dependencies of each language:
 set(CMAKE_DEPENDS_CHECK_CXX
-  "/Users/borat/CLionProjects/tmp/geom2/main.cpp" "/Users/borat/CLionProjects/tmp/geom2/cmake-build-debug/CMakeFiles/geom2.dir/main.cpp.o"
+  "/Users/borat/CLionProjects/FORGIT/geom2/main.cpp" "/Users/borat/CLionProjects/FORGIT/geom2/cmake-build-debug/CMakeFiles/geom2.dir/main.cpp.o"
   )
 set(CMAKE_CXX_COMPILER_ID "AppleClang")
 
