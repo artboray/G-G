@@ -74,10 +74,12 @@ int main(int argc, char* argv[]) {
 
     if (type < 5 || type > 6) {
         printf("Input file has a wrong format\n");
+        fclose(file);
         return 1;
     }
     if (width <= 0 || height <= 0 || (width * 1ll * height > INF)) {
         printf("Not acceptable amount of data\n");
+        fclose(file);
         return 1;
     }
 
