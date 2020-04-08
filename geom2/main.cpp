@@ -16,7 +16,7 @@ int type, width, height, flag;
 double brightness, thickness, gc;
 
 uchar* bytes;
-bool steep;
+bool steep = 0;
 
 struct Point {
     double x, y;
@@ -89,6 +89,7 @@ void draw(int x, int y, double intensity) {
     if ((x >= height) || (y >= width) || (x < 0) || (y < 0))
         return;
 
+    if (intensity == 0.0) return;
     if (thickness < 1.0) intensity *= thickness;
 
     double tmp = 0.0;
