@@ -108,8 +108,15 @@ double fpart(double x) {
     return x - floor(x);
 }
 
+double rfpart(double x) {
+    return 1.0 - fpart(x);
+}
+
 void algo(double x0, double y0, double x, double y) {
-    steep = abs(y - y0) > abs(x - x0);
+
+    //x0 += 0.5, y0 += 0.5, x += 0.5, y += 0.5;
+
+    steep = fabs(y - y0) > fabs(x - x0);
 
     if (steep) {
         swap(x, y);
@@ -124,31 +131,37 @@ void algo(double x0, double y0, double x, double y) {
     double dy = y - y0;
 
     double grad;
-    if (dx == 0.0) grad = 1;
+    if (dx == 0.0) grad = 1.0;
     else grad = dy / dx;
 
     double xx = round(x0);
     double yy = y0 + grad * (xx - x0);
-    double xgap = 1 - fpart(x0 + 0.5);
+    double xgap = rfpart(x0);
 
     int xs = int(xx);
     int ys = ipart(yy);
 
-    //draw(xs, ys, (1 - fpart(yy)) * xgap);
-    //draw(xs, ys + 1, fpart(yy) * xgap);
+    draw(xs, ys, (1 - fpart(yy)) * xgap);
+    draw(xs, ys + 1, fpart(yy) * xgap);
+
+    //cout << x0 << ' ' << y0 << ' ' << x << ' ' << y << endl;
+    //cout << fpart(x0 + 0.5) << ' ' << rfpart(x0 + 0.5) << endl;
+    //cout << xs << ' ' << ys << ' ' << xgap << endl;
+    //cout << yy << endl;
+
     double intery = yy + grad;
 
     xx = round(x);
     yy = y + grad * (xx - x);
-    xgap = 1 - fpart(x + 0.5);
+    xgap = rfpart(x);
 
     int xf = (int)xx;
     int yf = ipart(yy);
 
-    //draw(xf, yf, (1 - fpart(yy)) * xgap);
-    //draw(xf, yf + 1, fpart(yy) * xgap);
+    draw(xf, yf, (1 - fpart(yy)) * xgap);
+    draw(xf, yf + 1, fpart(yy) * xgap);
 
-    for (int x = xs; x <= xf; x++) {
+    for (int x = xs + 1; x <= xf - 1; x++) {
         draw(x, ipart(intery), 1 - fpart(intery));
         draw(x, ipart(intery) + 1, fpart(intery));
         intery += grad;
