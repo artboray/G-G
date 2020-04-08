@@ -17,6 +17,7 @@ double brightness, thickness, gc;
 
 uchar* bytes;
 bool steep = 0;
+uchar* mark;
 
 struct Point {
     double x, y;
@@ -101,6 +102,8 @@ void draw(int x, int y, double intensity) {
     }
     if (gc != -1) bytes[x * width + y] = uchar(to_gc(tmp + ((brightness - tmp) * intensity)));
     else bytes[x * width + y] = uchar(to_sRGB(tmp + ((brightness - tmp) * intensity)));
+
+    mark[x * width + y] = 1;
 }
 
 int ipart(double x) {
@@ -135,33 +138,24 @@ void algo(double x0, double y0, double x, double y) {
     else grad = dy / dx;
 
     double xx = round(x0);
-    double yy = y0 + grad * (xx - x0);
-    double xgap = rfpart(x0);
-
     int xs = int(xx);
-    int ys = ipart(yy);
-
-    //draw(xs, ys, (1 - fpart(yy)) * xgap);
-    //draw(xs, ys + 1, fpart(yy) * xgap);
-
     double intery = y0;
-
     xx = round(x);
-    yy = y + grad * (xx - x);
-    xgap = rfpart(x);
-
     int xf = (int)xx;
-    int yf = ipart(yy);
-
-    //draw(xf, yf, (1 - fpart(yy)) * xgap);
-    //draw(xf, yf + 1, fpart(yy) * xgap);
 
     for (int x = xs; x <= xf; x++) {
+
+        //cout << x << ' ' << intery << endl;
+
         draw(x, ipart(intery), 1 - fpart(intery));
         draw(x, ipart(intery) + 1, fpart(intery));
         //draw(x, ipart(intery) - 1, fpart(intery));
         intery += grad;
     }
+}
+
+bool valid(int x) {
+    return x >= 0 && x < height * width;
 }
 
 int main(int argc, char *argv[]) {
@@ -200,7 +194,8 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    bytes = new uchar[height * width + 10];
+    bytes = new uchar[height * width + 100];
+    mark = new uchar[height * width + 100];
 
     for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++)
@@ -210,8 +205,11 @@ int main(int argc, char *argv[]) {
     if (file == nullptr) {
         std::cerr << "Output file can't be opened\n";
         delete[] bytes;
+        delete[] mark;
         return 1;
     }
+
+    for (int i = 0; i < height * width; i++) mark[i] = 0;
 
     if (thickness > 1) {
 
@@ -241,13 +239,25 @@ int main(int argc, char *argv[]) {
         algo(p[2].x, p[2].y, p[0].x, p[0].y);
         algo(p[1].x, p[1].y, p[3].x, p[3].y);
         algo(p[0].x, p[0].y, p[1].x, p[1].y);
-        algo(p[3].x, p[3].y, p[2].x, p[2].y);
+        algo(p[2].x, p[2].y, p[3].x, p[3].y);
 
         steep = 0;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
                 if (check(Point(i, j)))
                     draw(i, j, 1);
+
+        for (int i = 0; i < height; i++)
+            for (int j = 0; j < width; j++) {
+                int cnt = 0;
+                if (valid(i * width + j + 1) && mark[i * width + j + 1] == 1) cnt++;
+                if (valid(i * width + j - 1) && mark[i * width + j + 1] == 1) cnt++;
+                if (valid((i + 1) * width + j) && mark[(i + 1) * width + j] == 1) cnt++;
+                if (valid((i - 1) * width + j) && mark[(i - 1) * width + j] == 1) cnt++;
+
+                if (cnt == 4)
+                    draw(j, i, 1);
+            }
 
     } else algo(x0, y0, x, y);
 
@@ -258,5 +268,6 @@ int main(int argc, char *argv[]) {
 
     fclose(file);
     delete[] bytes;
+    delete[] mark;
     return 0;
 }
