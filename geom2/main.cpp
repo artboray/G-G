@@ -286,6 +286,7 @@ int main(int argc, char *argv[]) {
 
         rangle = angle * 180.0 / M_PI;
         rangle = fabs(rangle);
+        if (rangle >= 90.0) rangle = 180.0 - rangle;
 
         p[0].x = x0 + (thickness / 2.0) * cos(angle + M_PI / 2.0);
         p[0].y = y0 + (thickness / 2.0) * sin(angle + M_PI / 2.0);
