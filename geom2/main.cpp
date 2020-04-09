@@ -140,6 +140,7 @@ void ralgo(double x0, double y0, double x, double y) {
     for (int x = xs; x <= xf; x++) {
         draw(x, ipart(intery), 1 - fpart(intery));
         draw(x, ipart(intery) + 1, fpart(intery));
+        draw(x, ipart(intery) - 1, fpart(intery));
         intery += grad;
     }
 }
