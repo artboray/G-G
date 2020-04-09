@@ -157,7 +157,7 @@ void algo(double x0, double y0, double x, double y) {
         swap(y, y0);
     }
 
-    if (rangle == 45) {
+    if (rangle == 45 && thickness > 1.0) {
         ralgo(x0, y0, x, y);
         return;
     }
