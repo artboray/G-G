@@ -22,6 +22,8 @@ uchar* mark;
 int cnt1, cnt2;
 int flasm = 0;
 
+double rangle = 0;
+
 struct Point {
     double x, y;
     Point(double a, double b) {
@@ -84,7 +86,7 @@ double to_sRGB(double u) {
 
 double from_sRGB(double u) {
     if (u / 255.0 <= 0.04045) return u / 12.92;
-    else return 255.0 * pow(((u / 255.0) + 0.055) / 1.055, 2.4);
+    else return 255.0 * pow(((u / 255.0) + 0.055) / 1.055, 1.2);
 }
 
 void draw(int x, int y, double intensity) {
@@ -121,6 +123,27 @@ double rfpart(double x) {
     return 1.0 - fpart(x);
 }
 
+void ralgo(double x0, double y0, double x, double y) {
+    double dx = x - x0;
+    double dy = y - y0;
+
+    double grad;
+    if (dx == 0.0) grad = 0.0;
+    else grad = dy / dx;
+
+    double xx = round(x0);
+    int xs = int(xx);
+    double intery = y0;
+    xx = round(x);
+    int xf = (int)xx;
+
+    for (int x = xs; x <= xf; x++) {
+        draw(x, ipart(intery), 1 - fpart(intery));
+        draw(x, ipart(intery) + 1, fpart(intery));
+        intery += grad;
+    }
+}
+
 void algo(double x0, double y0, double x, double y) {
     steep = fabs(y - y0) > fabs(x - x0);
 
@@ -131,6 +154,11 @@ void algo(double x0, double y0, double x, double y) {
     if (x0 > x) {
         swap(x, x0);
         swap(y, y0);
+    }
+
+    if (rangle == 45) {
+        ralgo(x0, y0, x, y);
+        return;
     }
 
     double dx = x - x0;
@@ -192,6 +220,10 @@ bool valid(int x) {
     return x >= 0 && x < height * width;
 }
 
+double dist(Point a, Point b) {
+    return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
+}
+
 int main(int argc, char *argv[]) {
     if (argc < 9 || argc > 10) {
         std::cerr << "Wrong number of arguments\n";
@@ -249,6 +281,9 @@ int main(int argc, char *argv[]) {
 
         Point p[4];
         double angle = atan2(y - y0, x - x0);
+
+        rangle = angle * 180.0 / M_PI;
+
         p[0].x = x0 + (thickness / 2.0) * cos(angle + M_PI / 2.0);
         p[0].y = y0 + (thickness / 2.0) * sin(angle + M_PI / 2.0);
         p[1].x = x0 + (thickness / 2.0) * cos(angle - M_PI / 2.0);
@@ -260,21 +295,25 @@ int main(int argc, char *argv[]) {
 
         sort(p, p + 4);
 
-        //cout << p[0].x << ' ' << p[0].y << endl;
-        //cout << p[1].x << ' ' << p[1].y << endl;
-        //cout << p[2].x << ' ' << p[2].y << endl;
-        //cout << p[3].x << ' ' << p[3].y << endl;
-
         ln[0] = Line(p[0].x, p[0].y, p[1].x, p[1].y);
         ln[1] = Line(p[3].x, p[3].y, p[2].x, p[2].y);
         ln[2] = Line(p[2].x, p[2].y, p[0].x, p[0].y);
         ln[3] = Line(p[1].x, p[1].y, p[3].x, p[3].y);
 
+        bool skp = 0;
+        if (dist(p[2], p[3]) < dist(p[1], p[3])) {
+            algo(p[1].x, p[1].y, p[3].x, p[3].y);
+            algo(p[2].x, p[2].y, p[0].x, p[0].y);
+            skp = 1;
+        }
+
         algo(p[2].x, p[2].y, p[3].x, p[3].y);
         algo(p[0].x, p[0].y, p[1].x, p[1].y);
 
-        algo(p[1].x, p[1].y, p[3].x, p[3].y);
-        algo(p[2].x, p[2].y, p[0].x, p[0].y);
+        if (!skp) {
+            algo(p[1].x, p[1].y, p[3].x, p[3].y);
+            algo(p[2].x, p[2].y, p[0].x, p[0].y);
+        }
 
         steep = 0;
         for (int i = 0; i < width; i++)
@@ -282,6 +321,9 @@ int main(int argc, char *argv[]) {
                 if (check(Point(i, j)))
                     draw(i, j, 1);
 
+        if (rangle == 45 && ((round(x0) == 0 && round(y0) == 0) || (round(x) == 0 && round(y) == 0)))
+            if (thickness > 1)
+                draw(0, 0, 1);
 
         /*for (int i = 0; i < height; i++)
             for (int j = 0; j < width; j++) {
