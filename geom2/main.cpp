@@ -86,7 +86,7 @@ double to_sRGB(double u) {
 
 double from_sRGB(double u) {
     if (u / 255.0 <= 0.04045) return u / 12.92;
-    else return 255.0 * pow(((u / 255.0) + 0.055) / 1.055, 1.2);
+    else return 255.0 * pow(((u / 255.0) + 0.055) / 1.055, 2.4);
 }
 
 void draw(int x, int y, double intensity) {
