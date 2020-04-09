@@ -128,7 +128,7 @@ void ralgo(double x0, double y0, double x, double y) {
     double dy = y - y0;
 
     double grad;
-    if (dx == 0.0) grad = 0.0;
+    if (dx == 0.0) grad = 1.0;
     else grad = dy / dx;
 
     double xx = round(x0);
