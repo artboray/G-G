@@ -37,7 +37,7 @@
         <entry file="file://$PROJECT_DIR$/main.cpp">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="231">
-              <caret line="264" column="39" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="271" selection-end-column="1" />
+              <caret line="264" column="39" lean-forward="true" selection-start-line="264" selection-start-column="39" selection-end-line="264" selection-end-column="39" />
               <folding>
                 <element signature="e#0#17#0" expanded="true" />
               </folding>
@@ -67,7 +67,7 @@
     <option name="height" value="742" />
   </component>
   <component name="ProjectView">
-    <navigator currentView="ProjectPane" proportions="" version="1">
+    <navigator proportions="" version="1">
       <flattenPackages />
       <showMembers />
       <showModules />
@@ -80,9 +80,7 @@
       <manualOrder />
       <foldersAlwaysOnTop value="true" />
     </navigator>
-    <panes>
-      <pane id="ProjectPane" />
-    </panes>
+    <panes />
   </component>
   <component name="PropertiesComponent">
     <property name="settings.editor.selected.configurable" value="language.cpp" />
@@ -130,12 +128,12 @@
       <workItem from="1586528980721" duration="1644000" />
       <workItem from="1586530818557" duration="1708000" />
       <workItem from="1586532649173" duration="1642000" />
-      <workItem from="1586535103130" duration="995000" />
+      <workItem from="1586535103130" duration="1258000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="8640000" />
+    <option name="totallyTimeSpent" value="8903000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="266" y="44" width="1068" height="742" extended-state="0" />
@@ -273,7 +271,7 @@
     <entry file="file://$PROJECT_DIR$/main.cpp">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="231">
-          <caret line="264" column="39" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="271" selection-end-column="1" />
+          <caret line="264" column="39" lean-forward="true" selection-start-line="264" selection-start-column="39" selection-end-line="264" selection-end-column="39" />
           <folding>
             <element signature="e#0#17#0" expanded="true" />
           </folding>
