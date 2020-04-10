@@ -19,6 +19,11 @@ uchar* bytes;
 bool steep = 0;
 uchar* mark;
 
+int cnt1, cnt2;
+int flasm = 0;
+
+double rangle = 0;
+
 struct Point {
     double x, y;
     Point(double a, double b) {
@@ -51,19 +56,19 @@ struct Line {
 
 Line ln[4];
 
-int inlin(Line l, Point p) {
+void inlin(Line l, Point p) {
     double tmp  = l.a * p.x + l.b * p.y + l.c;
-    if (tmp > 0) return 1;
-    else if (tmp < 0) return 0;
-    else return 10;
+    if (tmp > 0.0) cnt1++;
+    if (tmp < 0.0) cnt2++;
 }
 
 bool check(Point p) {
-    int ans = 0;
+    cnt1 = 0, cnt2 = 0;
     for (int i = 0; i < 4; i++)
-        ans += inlin(ln[i], p);
-    if (ans == 0 || ans == 4)
+        inlin(ln[i], p);
+    if (cnt1 == 4 || cnt2 == 4)
         return 1;
+    return 0;
 }
 
 double from_gc(double u) {
@@ -84,12 +89,14 @@ double from_sRGB(double u) {
     else return 255.0 * pow(((u / 255.0) + 0.055) / 1.055, 2.4);
 }
 
-void draw(int x, int y, double intensity) {
+void draw(int x, int y, double intensity, double rng) {
     if (!steep) swap(x, y);
 
     if ((x >= height) || (y >= width) || (x < 0) || (y < 0))
         return;
 
+    if (rng == 45.0 && mark[x * width + y] == 13)
+        return;
     if (intensity == 0.0) return;
     if (thickness < 1.0) intensity *= thickness;
 
@@ -103,7 +110,8 @@ void draw(int x, int y, double intensity) {
     if (gc != -1) bytes[x * width + y] = uchar(to_gc(tmp + ((brightness - tmp) * intensity)));
     else bytes[x * width + y] = uchar(to_sRGB(tmp + ((brightness - tmp) * intensity)));
 
-    mark[x * width + y] = 1;
+    //cout << x << ' ' << y << endl;
+    mark[x * width + y] = 13;
 }
 
 int ipart(double x) {
@@ -118,18 +126,7 @@ double rfpart(double x) {
     return 1.0 - fpart(x);
 }
 
-void algo(double x0, double y0, double x, double y) {
-    steep = fabs(y - y0) > fabs(x - x0);
-
-    if (steep) {
-        swap(x, y);
-        swap(y0, x0);
-    }
-    if (x0 > x) {
-        swap(x, x0);
-        swap(y, y0);
-    }
-
+void ralgo(double x0, double y0, double x, double y) {
     double dx = x - x0;
     double dy = y - y0;
 
@@ -144,18 +141,89 @@ void algo(double x0, double y0, double x, double y) {
     int xf = (int)xx;
 
     for (int x = xs; x <= xf; x++) {
+        draw(x, round(intery), 1 - fpart(intery), 0);
+        intery += grad;
+    }
+}
 
-        //cout << x << ' ' << intery << endl;
+void algo(double x0, double y0, double x, double y) {
+    steep = fabs(y - y0) > fabs(x - x0);
 
-        draw(x, ipart(intery), 1 - fpart(intery));
-        draw(x, ipart(intery) + 1, fpart(intery));
-        //draw(x, ipart(intery) - 1, fpart(intery));
+    if (steep) {
+        swap(x, y);
+        swap(y0, x0);
+    }
+    if (x0 > x) {
+        swap(x, x0);
+        swap(y, y0);
+    }
+
+    if (rangle == 45 && thickness > 1.0) {
+        ralgo(x0, y0, x, y);
+        return;
+    }
+
+    double dx = x - x0;
+    double dy = y - y0;
+
+    double grad;
+    if (dx == 0.0) grad = 1.0;
+    else grad = dy / dx;
+
+    double xx = round(x0);
+    int xs = int(xx);
+    double intery = y0 + grad * (xx - x0);
+    double xgap = 1;
+
+    if (thickness > 1.0)
+        xgap = rfpart(x0 + 0.5);
+
+    xx = round(x);
+    int xf = (int)xx;
+
+    if (y0 == y) {
+        intery = y0;
+        if (flasm == 2)
+            xs++, xf--;
+
+        for (int x = xs; x <= xf; x++) {
+            draw(x, ipart(intery), 1 - fpart(intery), 0);
+            draw(x, ipart(intery) + 1, fpart(intery), 0);
+        }
+
+        flasm = min(flasm + 1, 2);
+        return;
+    }
+
+    draw(xs, ipart(intery), rfpart(intery) * xgap, 0);
+    draw(xs, ipart(intery) + 1, fpart(intery) * xgap, 0);
+
+    intery += grad;
+
+    double intr = y + grad * (xx - x);
+    xgap = 1;
+
+    if (thickness > 1.0)
+        xgap = 1 - rfpart(x + 0.5);
+
+    draw(xf, ipart(intr), rfpart(intr) * xgap, 0);
+    draw(xf, ipart(intr) + 1, fpart(intr) * xgap, 0);
+
+    for (int x = xs + 1; x <= xf - 1; x++) {
+
+        draw(x, ipart(intery), 1 - fpart(intery), 0);
+        draw(x, ipart(intery) + 1, fpart(intery), 0);
+
         intery += grad;
     }
 }
 
 bool valid(int x) {
-    return x >= 0 && x < height * width;
+    return (x >= 0) && (x < height * width);
+}
+
+double dist(Point a, Point b) {
+    return sqrt((a.x - b.x) * (a.x - b.x) + (a.y - b.y) * (a.y - b.y));
 }
 
 int main(int argc, char *argv[]) {
@@ -209,12 +277,17 @@ int main(int argc, char *argv[]) {
         return 1;
     }
 
-    for (int i = 0; i < height * width; i++) mark[i] = 0;
+    for (int i = 0; i < height * width; i++) mark[i] = 12;
 
     if (thickness > 1) {
 
         Point p[4];
         double angle = atan2(y - y0, x - x0);
+
+        rangle = angle * 180.0 / M_PI;
+        rangle = fabs(rangle);
+        if (rangle >= 90.0) rangle = 180.0 - rangle;
+
         p[0].x = x0 + (thickness / 2.0) * cos(angle + M_PI / 2.0);
         p[0].y = y0 + (thickness / 2.0) * sin(angle + M_PI / 2.0);
         p[1].x = x0 + (thickness / 2.0) * cos(angle - M_PI / 2.0);
@@ -226,38 +299,59 @@ int main(int argc, char *argv[]) {
 
         sort(p, p + 4);
 
-        //cout << p[0].x << ' ' << p[0].y << endl;
-        //cout << p[1].x << ' ' << p[1].y << endl;
-        //cout << p[2].x << ' ' << p[2].y << endl;
-        //cout << p[3].x << ' ' << p[3].y << endl;
-
         ln[0] = Line(p[0].x, p[0].y, p[1].x, p[1].y);
         ln[1] = Line(p[3].x, p[3].y, p[2].x, p[2].y);
         ln[2] = Line(p[2].x, p[2].y, p[0].x, p[0].y);
         ln[3] = Line(p[1].x, p[1].y, p[3].x, p[3].y);
 
-        algo(p[2].x, p[2].y, p[0].x, p[0].y);
-        algo(p[1].x, p[1].y, p[3].x, p[3].y);
-        algo(p[0].x, p[0].y, p[1].x, p[1].y);
+        bool skp = 0;
+        if (dist(p[2], p[3]) < dist(p[1], p[3])) {
+            algo(p[1].x, p[1].y, p[3].x, p[3].y);
+            algo(p[2].x, p[2].y, p[0].x, p[0].y);
+            skp = 1;
+        }
+
         algo(p[2].x, p[2].y, p[3].x, p[3].y);
+        algo(p[0].x, p[0].y, p[1].x, p[1].y);
+
+        if (!skp) {
+            algo(p[1].x, p[1].y, p[3].x, p[3].y);
+            algo(p[2].x, p[2].y, p[0].x, p[0].y);
+        }
+
 
         steep = 0;
         for (int i = 0; i < width; i++)
             for (int j = 0; j < height; j++)
                 if (check(Point(i, j)))
-                    draw(i, j, 1);
+                    draw(i, j, 1, rangle);
 
-        for (int i = 0; i < height; i++)
-            for (int j = 0; j < width; j++) {
-                int cnt = 0;
-                if (valid(i * width + j + 1) && mark[i * width + j + 1] == 1) cnt++;
-                if (valid(i * width + j - 1) && mark[i * width + j + 1] == 1) cnt++;
-                if (valid((i + 1) * width + j) && mark[(i + 1) * width + j] == 1) cnt++;
-                if (valid((i - 1) * width + j) && mark[(i - 1) * width + j] == 1) cnt++;
+        if (rangle == 45.0 && ((round(x0) == 0 && round(y0) == 0) || (round(x) == 0 && round(y) == 0)))
+            if (thickness > 1)
+                draw(0, 0, 1, 0);
 
-                if (cnt == 4)
-                    draw(j, i, 1);
-            }
+        /*cout << "--------" << endl;
+        if (rangle != 45.0) {
+            while (1) {
+                int q = 0;
+                for (int i = 0; i < height; i++)
+                    for (int j = 0; j < width; j++)
+                        if (mark[i * width + j] != 13) {
+                            int cnt = 0;
+                            if (valid(i * width + j + 1) && mark[i * width + j + 1] == 13) cnt++;
+                            if (valid(i * width + j - 1) && mark[i * width + j + 1] == 13) cnt++;
+                            if (valid((i + 1) * width + j) && mark[(i + 1) * width + j] == 13) cnt++;
+                            if (valid((i - 1) * width + j) && mark[(i - 1) * width + j] == 13) cnt++;
+
+                            if (cnt >= 3) {
+                                draw(j, i, 1);
+                                q++;
+                            }
+                    }
+                if (q == 0)
+                    break;
+            }*/
+        //}
 
     } else algo(x0, y0, x, y);
 
