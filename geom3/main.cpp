@@ -93,7 +93,7 @@ void noDiz() {
 void ordered(int type) {
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++)
-            m8[i][j] = m8[i][j] / 64.0 - 0.5;
+            m8[i][j] = (m8[i][j] + 1.0) / 64.0 - 0.5;
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
             m4[i][j] = m4[i][j] / 16.0 - 0.5;
