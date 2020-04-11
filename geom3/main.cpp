@@ -71,7 +71,7 @@ int convertion(int n) {
             cnt = 0;
     }
     int ans = 0;
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 8; i++)
         ans += (tmp[i] << i);
 
     return ans;
@@ -93,14 +93,14 @@ void noDiz() {
 void ordered(int type) {
     for (int i = 0; i < 8; i++)
         for (int j = 0; j < 8; j++)
-            m8[i][j] /= 64.0;
+            m8[i][j] = m8[i][j] / 64.0 - 0.5;
     for (int i = 0; i < 4; i++)
         for (int j = 0; j < 4; j++)
-            m4[i][j] /= 16.0;
+            m4[i][j] = m4[i][j] / 16.0 - 0.5;
     for (int i = 0; i < height; i++)
         for (int j = 0; j < width; j++)
             if (type == 1) mark[i * width + j] = findC(mark[i * width + j] + 255.0 * m8[i % 8][j % 8]);
-            else if (type == 2) mark[i * width + j] = findC(mark[i * width + j] + (rand() % 256));
+            else if (type == 2) mark[i * width + j] = findC(mark[i * width + j] + 255.0 * ((rand() % 256) / 255.0 - 0.5));
             else if (type == 3) mark[i * width + j] = findC(mark[i * width + j] + 255.0 * m4[i % 4][j % 4]);
 }
 
