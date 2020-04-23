@@ -1,0 +1,24 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/borat/CLionProjects/FORGIT/geom4/main.cpp
+cstdio
+-
+cstdlib
+-
+cstring
+-
+cmath
+-
+algorithm
+-
+iostream
+-
+random
+-
+

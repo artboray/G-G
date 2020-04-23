@@ -1,0 +1,3 @@
+/Users/borat/CLionProjects/FORGIT/geom4/cmake-build-debug/CMakeFiles/rebuild_cache.dir
+/Users/borat/CLionProjects/FORGIT/geom4/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/borat/CLionProjects/FORGIT/geom4/cmake-build-debug/CMakeFiles/geom4.dir
