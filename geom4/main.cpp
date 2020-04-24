@@ -248,6 +248,13 @@ void HSV_RGB() {
     }
 }
 
+
+double clamp(double x) {
+    if (x > 255) return 255;
+    if (x < 0) return 0;
+    return x;
+}
+
 void RGB_601() {
     for (int i = 0; i < width * height; i++) {
         double r = data[i].mas[0];
@@ -258,10 +265,10 @@ void RGB_601() {
         double cb = -0.148 * r - 0.291 * g + 0.439 * b + 128.0;
         double cr = 0.439 * r - 0.368 * g - 0.071 * b + 128.0;
 
-        /*y -= 16.0, cb -= 16.0, cr -= 16.0;
+        y -= 16.0, cb -= 16.0, cr -= 16.0;
         y = (y / 219.0) * 255.0;
         cb = (cb / 224.0) * 255.0;
-        cr = (cr / 224.0) * 255.0;*/
+        cr = (cr / 224.0) * 255.0;
 
         data[i].mas[0] = round(y);
         data[i].mas[1] = round(cb);
@@ -274,6 +281,7 @@ void _601_RGB() {
         double y = data[i].mas[0];
         double cb = data[i].mas[1];
         double cr = data[i].mas[2];
+
         y /= 255.0, cb /= 255.0, cr /= 255.0;
         y *= 219.0, cb *= 224.0, cr *= 224.0;
         y += 16, cb += 16, cr += 16;
@@ -282,9 +290,9 @@ void _601_RGB() {
         double g = 1.164 * (y - 16.0) - 0.813 * (cr - 128.0) - 0.391 * (cb - 128.0);
         double b = 1.164 * (y - 16.0) + 2.018 * (cb - 128.0);
 
-        data[i].mas[0] = round(r);
-        data[i].mas[1] = round(g);
-        data[i].mas[2] = round(b);
+        data[i].mas[0] = round(clamp(r));
+        data[i].mas[1] = round(clamp(g));
+        data[i].mas[2] = round(clamp(b));
     }
 }
 
@@ -297,6 +305,11 @@ void RGB_709() {
         double y = 0.183 * r + 0.614 * g + 0.062 * b + 16.0;
         double cb = -0.101 * r - 0.338 * g + 0.439 * b + 128.0;
         double cr = 0.439 * r - 0.399 * g - 0.040 * b + 128.0;
+
+        y -= 16.0, cb -= 16.0, cr -= 16.0;
+        y = (y / 219.0) * 255.0;
+        cb = (cb / 224.0) * 255.0;
+        cr = (cr / 224.0) * 255.0;
 
         data[i].mas[0] = round(y);
         data[i].mas[1] = round(cb);
@@ -318,33 +331,10 @@ void _709_RGB() {
         double g = 1.164 * (y - 16.0) - 0.534 * (cr - 128.0) - 0.213 * (cb - 128.0);
         double b = 1.164 * (y - 16.0) + 2.115 * (cb - 128.0);
 
-        data[i].mas[0] = round(r);
-        data[i].mas[1] = round(g);
-        data[i].mas[2] = round(b);
+        data[i].mas[0] = round(clamp(r));
+        data[i].mas[1] = round(clamp(g));
+        data[i].mas[2] = round(clamp(b));
     }
-}
-
-const double eps = 1e-8;
-
-double spec(double c) {
-    if (c >= 0) {
-        c += 127.5;
-        return round(c);
-    }
-
-    c += 127.5;
-
-    double tmp = c - floor(c);
-    if (tmp >= 0.5)
-        return floor(c);
-    else
-        return ceil(c);
-}
-
-double clamp(double x) {
-    if (x > 255) return 255;
-    if (x < 0) return 0;
-    return x;
 }
 
 void RGB_YCOCG() {
