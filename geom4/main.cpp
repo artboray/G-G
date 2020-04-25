@@ -260,14 +260,14 @@ void RGB_601() {
         double r = data[i].mas[0];
         double g = data[i].mas[1];
         double b = data[i].mas[2];
-
+        
         double y = 0.299 * r + 0.587 * g + 0.114 * b;
         double cb = -0.168736 * r - 0.331264 * g + 0.5 * b + 128.0;
         double cr = 0.5 * r - 0.418688 * g - 0.081312 * b + 128.0;
 
-        data[i].mas[0] = round(y);
-        data[i].mas[1] = round(cb);
-        data[i].mas[2] = round(cr);
+        data[i].mas[0] = round(clamp(y));
+        data[i].mas[1] = round(clamp(cb));
+        data[i].mas[2] = round(clamp(cr));
     }
 }
 
@@ -297,9 +297,9 @@ void RGB_709() {
         double cb = -0.11457211 * r - 0.38542789 * g + 0.5 * b + 128.0;
         double cr = 0.5 * r - 0.45415291 * g - 0.04584709 * b + 128.0;
 
-        data[i].mas[0] = round(y);
-        data[i].mas[1] = round(cb);
-        data[i].mas[2] = round(cr);
+        data[i].mas[0] = round(clamp(y));
+        data[i].mas[1] = round(clamp(cb));
+        data[i].mas[2] = round(clamp(cr));
     }
 }
 
