@@ -261,14 +261,9 @@ void RGB_601() {
         double g = data[i].mas[1];
         double b = data[i].mas[2];
 
-        double y = 0.257 * r + 0.504 * g + 0.098 * b + 16.0;
-        double cb = -0.148 * r - 0.291 * g + 0.439 * b + 128.0;
-        double cr = 0.439 * r - 0.368 * g - 0.071 * b + 128.0;
-
-        y -= 16.0, cb -= 16.0, cr -= 16.0;
-        y = (y / 219.0) * 255.0;
-        cb = (cb / 224.0) * 255.0;
-        cr = (cr / 224.0) * 255.0;
+        double y = 0.299 * r + 0.587 * g + 0.114 * b;
+        double cb = -0.168736 * r - 0.331264 * g + 0.5 * b + 128.0;
+        double cr = 0.5 * r - 0.418688 * g - 0.081312 * b + 128.0;
 
         data[i].mas[0] = round(y);
         data[i].mas[1] = round(cb);
@@ -282,13 +277,9 @@ void _601_RGB() {
         double cb = data[i].mas[1];
         double cr = data[i].mas[2];
 
-        y /= 255.0, cb /= 255.0, cr /= 255.0;
-        y *= 219.0, cb *= 224.0, cr *= 224.0;
-        y += 16, cb += 16, cr += 16;
-
-        double r = 1.164 * (y - 16.0) + 1.596 * (cr - 128.0);
-        double g = 1.164 * (y - 16.0) - 0.813 * (cr - 128.0) - 0.391 * (cb - 128.0);
-        double b = 1.164 * (y - 16.0) + 2.018 * (cb - 128.0);
+        double r = y + 1.402 * (cr - 128.0);
+        double g = y - 0.344136 * (cb - 128.0) - 0.714136 * (cr - 128.0);
+        double b = y + 1.772 * (cb - 128.0);
 
         data[i].mas[0] = round(clamp(r));
         data[i].mas[1] = round(clamp(g));
@@ -302,14 +293,9 @@ void RGB_709() {
         double g = data[i].mas[1];
         double b = data[i].mas[2];
 
-        double y = 0.183 * r + 0.614 * g + 0.062 * b + 16.0;
-        double cb = -0.101 * r - 0.338 * g + 0.439 * b + 128.0;
-        double cr = 0.439 * r - 0.399 * g - 0.040 * b + 128.0;
-
-        y -= 16.0, cb -= 16.0, cr -= 16.0;
-        y = (y / 219.0) * 255.0;
-        cb = (cb / 224.0) * 255.0;
-        cr = (cr / 224.0) * 255.0;
+        double y = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+        double cb = -0.11457211 * r - 0.38542789 * g + 0.5 * b + 128.0;
+        double cr = 0.5 * r - 0.45415291 * g - 0.04584709 * b + 128.0;
 
         data[i].mas[0] = round(y);
         data[i].mas[1] = round(cb);
@@ -323,13 +309,9 @@ void _709_RGB() {
         double cb = data[i].mas[1];
         double cr = data[i].mas[2];
 
-        y /= 255.0, cb /= 255.0, cr /= 255.0;
-        y *= 219.0, cb *= 224.0, cr *= 224.0;
-        y += 16, cb += 16, cr += 16;
-
-        double r = 1.164 * (y - 16.0) + 1.793 * (cr - 128.0);
-        double g = 1.164 * (y - 16.0) - 0.534 * (cr - 128.0) - 0.213 * (cb - 128.0);
-        double b = 1.164 * (y - 16.0) + 2.115 * (cb - 128.0);
+        double r = y + 1.5748 * (cr - 128.0);
+        double g = y - 0.18732427 * (cb - 128.0) - 0.46812427 * (cr - 128.0);
+        double b = y + 1.8556 * (cb - 128.0);
 
         data[i].mas[0] = round(clamp(r));
         data[i].mas[1] = round(clamp(g));
